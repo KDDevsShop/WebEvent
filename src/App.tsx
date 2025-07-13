@@ -1,15 +1,23 @@
-import { Button } from './components/ui/button';
-import { Loader2Icon } from 'lucide-react';
+import { ToastContainer, Bounce } from 'react-toastify';
+import Router from './components/common/Router';
 
 function App() {
   return (
     <>
-      <div>
-        <Button className='bg-red-500 hover:bg-red-600'>
-          <Loader2Icon className='animate-spin' />
-          Hello
-        </Button>
-      </div>
+      <Router />
+      <ToastContainer
+        position='top-right'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light'
+        transition={Bounce}
+      />
     </>
   );
 }
