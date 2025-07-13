@@ -1,16 +1,26 @@
-import authService from './authService.js';
+import authService from './authService';
+
+type RequestHeaders = Record<string, string>;
 
 class ApiService {
+  baseUrl: string;
+  authService: typeof authService;
+
   constructor(baseUrl = import.meta.env.VITE_API_BASE_URL) {
     this.baseUrl = baseUrl || 'http://localhost:5000/api';
     this.authService = authService;
   }
 
-  async request(endpoint, method = 'GET', body = null, headers = {}) {
+  async request<T = unknown>(
+    endpoint: string,
+    method: string = 'GET',
+    body: unknown = null,
+    headers: RequestHeaders = {}
+  ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const accessToken = this.authService.getAccessToken();
 
-    const options = {
+    const options: RequestInit & { headers: RequestHeaders } = {
       method,
       headers: {
         Authorization: accessToken ? `Bearer ${accessToken}` : '',
@@ -28,7 +38,6 @@ class ApiService {
 
     try {
       const response = await fetch(url, options);
-
       const data = await response.json();
 
       if (data.error) {
@@ -43,11 +52,16 @@ class ApiService {
     }
   }
 
-  async retryRequest(endpoint, method, body, headers) {
+  async retryRequest<T = unknown>(
+    endpoint: string,
+    method: string,
+    body: unknown,
+    headers: RequestHeaders = {}
+  ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const newAccessToken = this.authService.getAccessToken();
 
-    const options = {
+    const options: RequestInit & { headers: RequestHeaders } = {
       method,
       headers: {
         Authorization: `Bearer ${newAccessToken}`,
@@ -64,7 +78,6 @@ class ApiService {
     }
 
     const response = await fetch(url, options);
-
     const data = await response.json();
 
     if (data.error) {
@@ -75,20 +88,28 @@ class ApiService {
     return data;
   }
 
-  get(endpoint, headers = {}) {
-    return this.request(endpoint, 'GET', null, headers);
+  get<T = unknown>(endpoint: string, headers: RequestHeaders = {}) {
+    return this.request<T>(endpoint, 'GET', null, headers);
   }
 
-  post(endpoint, body, headers = {}) {
-    return this.request(endpoint, 'POST', body, headers);
+  post<T = unknown>(
+    endpoint: string,
+    body: unknown,
+    headers: RequestHeaders = {}
+  ) {
+    return this.request<T>(endpoint, 'POST', body, headers);
   }
 
-  put(endpoint, body, headers = {}) {
-    return this.request(endpoint, 'PUT', body, headers);
+  put<T = unknown>(
+    endpoint: string,
+    body: unknown,
+    headers: RequestHeaders = {}
+  ) {
+    return this.request<T>(endpoint, 'PUT', body, headers);
   }
 
-  delete(endpoint, headers = {}) {
-    return this.request(endpoint, 'DELETE', null, headers);
+  delete<T = unknown>(endpoint: string, headers: RequestHeaders = {}) {
+    return this.request<T>(endpoint, 'DELETE', null, headers);
   }
 }
 

@@ -1,10 +1,13 @@
 class AuthService {
+  accessTokenKey: string;
+  refreshTokenKey: string;
+
   constructor() {
-    this.accessTokenKey = "accessToken";
-    this.refreshTokenKey = "refreshToken";
+    this.accessTokenKey = 'accessToken';
+    this.refreshTokenKey = 'refreshToken';
   }
 
-  setAccessToken(token) {
+  setAccessToken(token: string) {
     localStorage.setItem(this.accessTokenKey, token);
   }
 
@@ -16,7 +19,7 @@ class AuthService {
     localStorage.removeItem(this.accessTokenKey);
   }
 
-  setRefreshToken(token) {
+  setRefreshToken(token: string) {
     localStorage.setItem(this.refreshTokenKey, token);
   }
 
