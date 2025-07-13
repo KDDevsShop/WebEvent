@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [userInfo, setUserInfo] = useState<{
     name?: string;
     avatar?: string;
@@ -26,15 +25,14 @@ const Header = () => {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setIsLoggedIn(false);
-    setUserInfo(null);
-    setShowDropdown(false);
-    // Optionally redirect to home page
-    window.location.href = '/';
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('user');
+  //   setIsLoggedIn(false);
+  //   setUserInfo(null);
+  //   // Optionally redirect to home page
+  //   window.location.href = '/';
+  // };
 
   return (
     <header className='bg-gray-300 text-white py-6 shadow-md'>
@@ -74,23 +72,22 @@ const Header = () => {
               Đăng nhập
             </Button>
           ) : (
-
-              <div className='flex items-center space-x-2 cursor-pointer'>
-                {/* User Avatar */}
-                <div className='w-10 h-10 rounded-full bg-primary flex items-center justify-center overflow-hidden'>
-                  {userInfo?.avatar ? (
-                    <img
-                      src={userInfo.avatar}
-                      alt='User Avatar'
-                      className='w-full h-full object-cover'
-                    />
-                  ) : (
-                    <span className='text-white font-semibold text-sm'>
-                      {userInfo?.name?.charAt(0)?.toUpperCase() || 'U'}
-                    </span>
-                  )}
-                </div>
+            <div className='flex items-center space-x-2 cursor-pointer'>
+              {/* User Avatar */}
+              <div className='w-10 h-10 rounded-full bg-primary flex items-center justify-center overflow-hidden'>
+                {userInfo?.avatar ? (
+                  <img
+                    src={userInfo.avatar}
+                    alt='User Avatar'
+                    className='w-full h-full object-cover'
+                  />
+                ) : (
+                  <span className='text-white font-semibold text-sm'>
+                    {userInfo?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </span>
+                )}
               </div>
+            </div>
           )}
         </div>
       </div>
