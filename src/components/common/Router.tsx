@@ -1,6 +1,7 @@
-import CustomerLayout from '@/layouts/CustomerLayout';
-import HomePage from '@/pages/client/HomePage';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AdminLayout from "@/layouts/AdminLayout";
+import CustomerLayout from "@/layouts/CustomerLayout";
+import HomePage from "@/pages/client/HomePage";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const Router = () => {
   return (
@@ -8,7 +9,7 @@ const Router = () => {
       {/* Customer rotues */}
       <Routes>
         <Route
-          path='/'
+          path="/"
           element={
             <CustomerLayout>
               <HomePage />
@@ -19,9 +20,18 @@ const Router = () => {
         {/* Admin rotues */}
 
         <Route
-          path='*'
+          path="/admin"
           element={
-            <div className='flex justify-center items-center h-screen'>404</div>
+            <AdminLayout>
+              <HomePage />
+            </AdminLayout>
+          }
+        />
+
+        <Route
+          path="*"
+          element={
+            <div className="flex justify-center items-center h-screen">404</div>
           }
         />
       </Routes>
