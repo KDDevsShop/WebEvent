@@ -28,14 +28,14 @@ const Header = () => {
 
         {/* Buttons */}
         <div className='flex space-x-4'>
+          <Button className='bg-primary px-4 py-2 rounded hover:bg-secondary'>
+            Tạo sự kiện
+          </Button>
           <Button
             color='primary'
             className='bg-primary px-4 py-2 rounded hover:bg-secondary'
           >
             Đăng nhập
-          </Button>
-          <Button className='bg-primary px-4 py-2 rounded hover:bg-secondary'>
-            Tạo sự kiện
           </Button>
         </div>
       </div>
