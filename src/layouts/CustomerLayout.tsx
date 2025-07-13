@@ -5,9 +5,7 @@ const CustomerLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <>
       <Header />
-      <main className='flex flex-col items-center justify-center min-h-screen bg-gray-100'>
-        {children}
-      </main>
+      <main className='flex flex-col min-h-screen bg-gray-100'>{children}</main>
     </>
   );
 };

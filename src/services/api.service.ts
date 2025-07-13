@@ -52,42 +52,6 @@ class ApiService {
     }
   }
 
-  async retryRequest<T = unknown>(
-    endpoint: string,
-    method: string,
-    body: unknown,
-    headers: RequestHeaders = {}
-  ): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
-    const newAccessToken = this.authService.getAccessToken();
-
-    const options: RequestInit & { headers: RequestHeaders } = {
-      method,
-      headers: {
-        Authorization: `Bearer ${newAccessToken}`,
-        ...headers,
-      },
-    };
-
-    if (body instanceof FormData) {
-      options.body = body;
-      delete options.headers['Content-Type'];
-    } else if (body && method !== 'GET' && method !== 'HEAD') {
-      options.body = JSON.stringify(body);
-      options.headers['Content-Type'] = 'application/json';
-    }
-
-    const response = await fetch(url, options);
-    const data = await response.json();
-
-    if (data.error) {
-      console.log(data.error);
-      throw new Error(data.error);
-    }
-
-    return data;
-  }
-
   get<T = unknown>(endpoint: string, headers: RequestHeaders = {}) {
     return this.request<T>(endpoint, 'GET', null, headers);
   }

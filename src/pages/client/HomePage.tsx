@@ -1,19 +1,11 @@
-import eventTypeService from '@/services/eventType.service';
-import React from 'react';
+import EventTypeList from '@/components/client/HomePage/CategoryList';
+import Hero from '@/components/client/HomePage/Hero';
 
 const HomePage = () => {
-  React.useEffect(() => {
-    const fetchEventTypes = async () => {
-      const response = await eventTypeService.getAllEventTypes();
-      console.log(response);
-    };
-
-    fetchEventTypes();
-  }, []);
-
   return (
     <div>
-      <h1>Home page</h1>
+      <Hero />
+      <EventTypeList />
     </div>
   );
 };
