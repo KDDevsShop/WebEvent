@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
+  HousePlusIcon,
   Package,
   LogOut,
   ListOrderedIcon,
@@ -15,9 +16,9 @@ const navItems = [
     path: "/dashboard",
   },
   {
-    label: "Quản lý bác sĩ",
-    icon: <Users size={18} />,
-    path: "/admin/doctors",
+    label: "Quản lý phòng",
+    icon: <HousePlusIcon size={18} />,
+    path: "/admin/rooms",
   },
   {
     label: "Quản lý chuyên khoa",
