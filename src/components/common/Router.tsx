@@ -6,14 +6,20 @@ import RoomListAdmin from '@/pages/admin/RoomListAdmin';
 import LoginPage from '@/pages/client/LoginPage';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import RegisterPage from '@/pages/client/RegisterPage';
+import BookingPage from '@/pages/client/BookingPage';
+import EventDetailPage from '@/pages/client/EventDetailPage';
 
 const Router = () => {
   return (
     <BrowserRouter>
-      {/* Customer rotues */}
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Customer routes */}
         <Route
-          path='/'
+          path="/"
           element={
             <CustomerLayout>
               <HomePage />
@@ -22,7 +28,7 @@ const Router = () => {
         />
 
         <Route
-          path='/events'
+          path="/events"
           element={
             <CustomerLayout>
               <EventListPage />
@@ -31,7 +37,7 @@ const Router = () => {
         />
 
         <Route
-          path='/events'
+          path="/events"
           element={
             <CustomerLayout>
               <EventListPage />
@@ -39,15 +45,28 @@ const Router = () => {
           }
         />
 
-        {/* Login route */}
-        <Route path='/login' element={<LoginPage />} />
-
-        {/* Login route */}
-        <Route path='/register' element={<RegisterPage />} />
-        {/* Admin rotues */}
+        <Route
+          path="/events/:eventId"
+          element={
+            <CustomerLayout>
+              <EventDetailPage />
+            </CustomerLayout>
+          }
+        />
 
         <Route
-          path='/admin'
+          path="/bookings"
+          element={
+            <CustomerLayout>
+              <BookingPage />
+            </CustomerLayout>
+          }
+        />
+
+        {/* Admin routes */}
+
+        <Route
+          path="/admin"
           element={
             <AdminLayout>
               <HomePage />
@@ -56,7 +75,7 @@ const Router = () => {
         />
 
         <Route
-          path='/admin/rooms'
+          path="/admin/rooms"
           element={
             <AdminLayout>
               {/* RoomListAdmin will show the list of rooms */}
@@ -66,7 +85,7 @@ const Router = () => {
         />
 
         <Route
-          path='/admin/rooms'
+          path="/admin/rooms"
           element={
             <AdminLayout>
               {/* RoomListAdmin will show the list of rooms */}
@@ -76,9 +95,9 @@ const Router = () => {
         />
 
         <Route
-          path='*'
+          path="*"
           element={
-            <div className='flex justify-center items-center h-screen'>404</div>
+            <div className="flex justify-center items-center h-screen">404</div>
           }
         />
       </Routes>

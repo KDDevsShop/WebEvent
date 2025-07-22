@@ -1,12 +1,13 @@
 import { ToastContainer, Bounce } from 'react-toastify';
 import Router from './components/common/Router';
+import './App.css';
 
 function App() {
   return (
     <>
       <Router />
       <ToastContainer
-        position='top-right'
+        position="top-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -15,7 +16,7 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme='light'
+        theme="light"
         transition={Bounce}
       />
     </>
