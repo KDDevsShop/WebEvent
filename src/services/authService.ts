@@ -3,8 +3,8 @@ class AuthService {
   refreshTokenKey: string;
 
   constructor() {
-    this.accessTokenKey = 'accessToken';
-    this.refreshTokenKey = 'refreshToken';
+    this.accessTokenKey = "accessToken";
+    this.refreshTokenKey = "refreshToken";
   }
 
   setAccessToken(token: string) {
