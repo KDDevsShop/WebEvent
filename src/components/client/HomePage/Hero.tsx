@@ -1,6 +1,23 @@
 import { Input } from '@/components/ui/input';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  const [searchString, setSearchString] = React.useState('');
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchString(event.target.value);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    navigate(`/events?query=${encodeURIComponent(searchString)}`);
+    setSearchString('');
+  };
+
   return (
     <div
       className='relative w-screen min-h-[30rem] bg-cover bg-center flex flex-col items-center justify-center'
@@ -18,13 +35,14 @@ const Hero = () => {
           <br />
           Đặt lịch ngay để nhận ưu đãi hấp dẫn
         </h1>
-        <div className='w-full max-w-xl'>
+        <form onSubmit={handleSubmit} className='w-full max-w-xl'>
           <Input
             type='text'
             placeholder='Tìm kiếm sự kiện...'
+            onChange={handleChange}
             className='w-full px-6 py-6 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary bg-white/90 backdrop-blur-sm'
           />
-        </div>
+        </form>
       </div>
     </div>
   );

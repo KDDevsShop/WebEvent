@@ -50,7 +50,7 @@ const Header = () => {
           <Link to={'about-us'} className='text-white hover:text-primary'>
             Giới thiệu
           </Link>
-          <Link to={'event'} className='text-white hover:text-primary'>
+          <Link to={'events'} className='text-white hover:text-primary'>
             Sự kiện
           </Link>
           <Link to={'contact'} className='text-white hover:text-primary'>
