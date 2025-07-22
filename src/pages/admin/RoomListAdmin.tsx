@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import Datatable from "../../components/common/Datatable";
-import roomService from "../../services/roomService";
+import React, { useEffect, useState } from 'react';
+import Datatable from '../../components/common/Datatable';
+import roomService from '../../services/roomService';
 
 interface Room {
   room_id: number;
@@ -15,25 +15,25 @@ interface Room {
 const RoomListAdmin = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-  const [search, setSearch] = useState<string>("");
+  const [error, setError] = useState<string>('');
+  const [search, setSearch] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [pageSize] = useState<number>(10);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [modalType, setModalType] = useState<"view" | "edit" | "create" | null>(
-    null
+  const [modalType, setModalType] = useState<'view' | 'edit' | 'create' | null>(
+    null,
   );
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<Partial<Room>>({});
   const [formImages, setFormImages] = useState<File[]>([]);
   const [formLoading, setFormLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const fetchRooms = async (
-    params: { search?: string; page?: number } = {}
+    params: { search?: string; page?: number } = {},
   ) => {
     setLoading(true);
-    setError("");
+    setError('');
     try {
       const res = await roomService.getAllRooms({
         includeImages: true,
@@ -45,7 +45,7 @@ const RoomListAdmin = () => {
       setRooms((res.data as Room[]) || []);
       setTotalPages(res.pagination?.totalPages || 1);
     } catch {
-      setError("Failed to fetch rooms");
+      setError('Failed to fetch rooms');
     } finally {
       setLoading(false);
     }
@@ -63,27 +63,27 @@ const RoomListAdmin = () => {
 
   const handleView = (room: Room) => {
     setSelectedRoom(room);
-    setModalType("view");
+    setModalType('view');
   };
 
   const handleEdit = (room: Room) => {
     setSelectedRoom(room);
     setFormData({ ...room });
     setFormImages([]);
-    setModalType("edit");
+    setModalType('edit');
   };
 
   const handleCreate = () => {
     setSelectedRoom(null);
     setFormData({
-      room_name: "",
-      guest_capacity: "",
-      base_price: "",
-      status: "AVAILABLE",
+      room_name: '',
+      guest_capacity: 0,
+      base_price: 0,
+      status: 'AVAILABLE',
       is_active: true,
     });
     setFormImages([]);
-    setModalType("create");
+    setModalType('create');
   };
 
   const handleDelete = async (room: Room) => {
@@ -93,7 +93,7 @@ const RoomListAdmin = () => {
       await roomService.deleteRoom(room.room_id.toString());
       fetchRooms();
     } catch {
-      alert("Xoá phòng thất bại");
+      alert('Xoá phòng thất bại');
     } finally {
       setDeleteLoading(false);
     }
@@ -107,12 +107,14 @@ const RoomListAdmin = () => {
   };
 
   const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev: any) => ({
+    const { name, value } = e.target;
+    const type = (e.target as HTMLInputElement).type;
+    const checked = (e.target as HTMLInputElement).checked;
+    setFormData((prev: Partial<Room>) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -128,27 +130,28 @@ const RoomListAdmin = () => {
     try {
       const form = new FormData();
       // Exclude fields that should not be sent to backend
-      const excludeKeys = ["room_id", "created_at", "updated_at", "images"];
+      const excludeKeys = ['room_id', 'created_at', 'updated_at', 'images'];
       const entries = Object.entries(formData).filter(
-        ([key]) => !excludeKeys.includes(key)
+        ([key]) => !excludeKeys.includes(key),
       );
       entries.forEach(([key, value]) => {
         if (value !== undefined && value !== null)
-          form.append(key, value as any);
+          form.append(key, String(value));
       });
       if (formImages.length > 0) {
         // Only support single image for now (backend: upload.single("image"))
-        form.append("image", formImages[0]);
+        form.append('image', formImages[0]);
       }
-      if (modalType === "edit" && selectedRoom) {
-        await roomService.api.request(`/${selectedRoom.room_id}`, "PUT", form);
-      } else if (modalType === "create") {
-        await roomService.api.request("/", "POST", form);
+      if (modalType === 'edit' && selectedRoom) {
+        await roomService.api.request(`/${selectedRoom.room_id}`, 'PUT', form);
+      } else if (modalType === 'create') {
+        await roomService.api.request('/', 'POST', form);
       }
       fetchRooms();
       closeModal();
     } catch (err) {
-      alert("Lưu phòng thất bại");
+      alert('Lưu phòng thất bại');
+      console.log(err);
     } finally {
       setFormLoading(false);
     }
@@ -157,7 +160,7 @@ const RoomListAdmin = () => {
   return (
     <div className="p-6 bg-muted-foreground rounded-2xl">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold" style={{ color: "var(--primary)" }}>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>
           Danh sách phòng
         </h1>
         <button
@@ -183,21 +186,21 @@ const RoomListAdmin = () => {
         </button>
       </form>
       {error && (
-        <div className="mb-4" style={{ color: "var(--destructive)" }}>
+        <div className="mb-4" style={{ color: 'var(--destructive)' }}>
           {error}
         </div>
       )}
       <Datatable
         columns={[
-          { Header: "ID", accessor: "room_id" },
-          { Header: "Tên phòng", accessor: "room_name" },
-          { Header: "Sức chứa", accessor: "guest_capacity" },
-          { Header: "Giá cơ bản", accessor: "base_price" },
-          { Header: "Trạng thái", accessor: "status" },
+          { Header: 'ID', accessor: 'room_id' },
+          { Header: 'Tên phòng', accessor: 'room_name' },
+          { Header: 'Sức chứa', accessor: 'guest_capacity' },
+          { Header: 'Giá cơ bản', accessor: 'base_price' },
+          { Header: 'Trạng thái', accessor: 'status' },
           {
-            Header: "Hoạt động",
-            accessor: "is_active",
-            Cell: ({ value }) => (value ? "✔️" : "❌"),
+            Header: 'Hoạt động',
+            accessor: 'is_active',
+            Cell: ({ value }) => (value ? '✔️' : '❌'),
           },
         ]}
         data={rooms}
@@ -228,9 +231,9 @@ const RoomListAdmin = () => {
       </div>
 
       {/* Modal for view/edit/create */}
-      {(modalType === "view" ||
-        modalType === "edit" ||
-        modalType === "create") && (
+      {(modalType === 'view' ||
+        modalType === 'edit' ||
+        modalType === 'create') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative animate-fade-in">
             <button
@@ -253,57 +256,57 @@ const RoomListAdmin = () => {
                 />
               </svg>
             </button>
-            {modalType === "view" && selectedRoom && (
+            {modalType === 'view' && selectedRoom && (
               <div>
                 <h2
                   className="text-lg font-bold mb-2"
-                  style={{ color: "var(--primary)" }}
+                  style={{ color: 'var(--primary)' }}
                 >
                   Thông tin phòng
                 </h2>
                 <div className="space-y-2">
                   <div>
-                    <span className="font-semibold">ID:</span>{" "}
+                    <span className="font-semibold">ID:</span>{' '}
                     {selectedRoom.room_id}
                   </div>
                   <div>
-                    <span className="font-semibold">Tên phòng:</span>{" "}
+                    <span className="font-semibold">Tên phòng:</span>{' '}
                     {selectedRoom.room_name}
                   </div>
                   <div>
-                    <span className="font-semibold">Sức chứa:</span>{" "}
+                    <span className="font-semibold">Sức chứa:</span>{' '}
                     {selectedRoom.guest_capacity}
                   </div>
                   <div>
-                    <span className="font-semibold">Giá cơ bản:</span>{" "}
+                    <span className="font-semibold">Giá cơ bản:</span>{' '}
                     {selectedRoom.base_price}
                   </div>
                   <div>
-                    <span className="font-semibold">Trạng thái:</span>{" "}
+                    <span className="font-semibold">Trạng thái:</span>{' '}
                     {selectedRoom.status}
                   </div>
                   <div>
-                    <span className="font-semibold">Hoạt động:</span>{" "}
-                    {selectedRoom.is_active ? "✔️" : "❌"}
+                    <span className="font-semibold">Hoạt động:</span>{' '}
+                    {selectedRoom.is_active ? '✔️' : '❌'}
                   </div>
                   {/* TODO: Show images if available */}
                 </div>
               </div>
             )}
-            {(modalType === "edit" || modalType === "create") && (
+            {(modalType === 'edit' || modalType === 'create') && (
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <h2
                   className="text-lg font-bold mb-2"
-                  style={{ color: "var(--primary)" }}
+                  style={{ color: 'var(--primary)' }}
                 >
-                  {modalType === "edit" ? "Cập nhật phòng" : "Thêm phòng mới"}
+                  {modalType === 'edit' ? 'Cập nhật phòng' : 'Thêm phòng mới'}
                 </h2>
                 <div>
                   <label className="block font-semibold mb-1">Tên phòng</label>
                   <input
                     type="text"
                     name="room_name"
-                    value={formData.room_name || ""}
+                    value={formData.room_name || ''}
                     onChange={handleFormChange}
                     className="w-full border rounded px-3 py-2"
                     required
@@ -314,7 +317,7 @@ const RoomListAdmin = () => {
                   <input
                     type="number"
                     name="guest_capacity"
-                    value={formData.guest_capacity || ""}
+                    value={formData.guest_capacity || ''}
                     onChange={handleFormChange}
                     className="w-full border rounded px-3 py-2"
                   />
@@ -324,7 +327,7 @@ const RoomListAdmin = () => {
                   <input
                     type="number"
                     name="base_price"
-                    value={formData.base_price || ""}
+                    value={formData.base_price || ''}
                     onChange={handleFormChange}
                     className="w-full border rounded px-3 py-2"
                   />
@@ -333,7 +336,7 @@ const RoomListAdmin = () => {
                   <label className="block font-semibold mb-1">Trạng thái</label>
                   <select
                     name="status"
-                    value={formData.status || "AVAILABLE"}
+                    value={formData.status || 'AVAILABLE'}
                     onChange={handleFormChange}
                     className="w-full border rounded px-3 py-2"
                   >
@@ -378,7 +381,7 @@ const RoomListAdmin = () => {
                     className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700"
                     disabled={formLoading}
                   >
-                    {formLoading ? "Đang lưu..." : "Lưu"}
+                    {formLoading ? 'Đang lưu...' : 'Lưu'}
                   </button>
                 </div>
               </form>

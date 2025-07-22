@@ -1,26 +1,25 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import authService from "@/services/authService";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [accountName, setAccountName] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [accountName, setAccountName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/accounts/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('http://localhost:5000/api/accounts/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           password_hash: password,
@@ -29,16 +28,17 @@ const RegisterPage = () => {
       });
       const data = await res.json();
       if (!res.ok || !data?.data) {
-        setError(data?.message || "Đăng ký thất bại");
+        setError(data?.message || 'Đăng ký thất bại');
         setLoading(false);
         return;
       }
-      setSuccess("Đăng ký thành công! Đang chuyển hướng...");
+      setSuccess('Đăng ký thành công! Đang chuyển hướng...');
       setTimeout(() => {
-        navigate("/login");
+        navigate('/login');
       }, 1500);
     } catch (err) {
-      setError("Lỗi kết nối máy chủ");
+      setError('Lỗi kết nối máy chủ');
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,7 @@ const RegisterPage = () => {
                 </label>
                 <div className="relative">
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     className="w-full px-4 py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -115,7 +115,7 @@ const RegisterPage = () => {
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500"
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
-                    {showPassword ? "Ẩn" : "Hiện"}
+                    {showPassword ? 'Ẩn' : 'Hiện'}
                   </button>
                 </div>
               </div>
@@ -128,13 +128,13 @@ const RegisterPage = () => {
                 className="w-full py-2 rounded-lg bg-primary text-white font-semibold hover:bg-secondary transition"
                 disabled={loading}
               >
-                {loading ? "Đang đăng ký..." : "Đăng ký"}
+                {loading ? 'Đang đăng ký...' : 'Đăng ký'}
               </button>
               <div className="text-center text-sm mt-2">
-                Đã có tài khoản?{" "}
+                Đã có tài khoản?{' '}
                 <span
                   className="text-primary cursor-pointer hover:underline"
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate('/login')}
                 >
                   Đăng nhập
                 </span>
