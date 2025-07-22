@@ -14,9 +14,9 @@ const Hero = () => {
       {/* Content layer */}
       <div className='relative z-10 flex flex-col items-center justify-center px-4'>
         <h1 className='text-4xl font-bold mb-8 text-white text-left max-w-3xl'>
-          <span className='mb-4'>Đừng bỏ lỡ! </span>
+          <span className='mb-4 text-primary'>Đừng bỏ lỡ! </span>
           <br />
-          Đặt lịch ngay để nhận ưu đãi hấp dẫn!
+          Đặt lịch ngay để nhận ưu đãi hấp dẫn
         </h1>
         <div className='w-full max-w-xl'>
           <Input

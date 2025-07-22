@@ -25,9 +25,13 @@ type ApiResponse<T> = {
 
 const EventTypeItem = ({ category }: { category: EventType }) => {
   return (
-    <div className='px-8 py-16 border rounded-lg shadow-md bg-white'>
-      <h1 className='text-center text-3xl'>{category.type_name}</h1>
-      <p className='text-center text-xl'>{category.description}</p>
+    <div className='px-8 py-12 border rounded-xl shadow-lg bg-white cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out hover:shadow-xl'>
+      <h1 className='text-center text-3xl font-semibold mb-4 line-clamp-1 text-gray-800'>
+        {category.type_name}
+      </h1>
+      <p className='text-center text-lg text-gray-600 line-clamp-2'>
+        {category.description}
+      </p>
     </div>
   );
 };
@@ -53,10 +57,15 @@ const EventTypeList = () => {
   });
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 m-4'>
-      {eventTypes.map((category) => (
-        <EventTypeItem key={category.type_id} category={category} />
-      ))}
+    <div className='container mx-auto py-12 px-4'>
+      <h1 className='text-4xl font-bold mb-8 text-gray-800 text-center'>
+        Danh mục sự kiện
+      </h1>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 my-12'>
+        {eventTypes.map((category) => (
+          <EventTypeItem key={category.type_id} category={category} />
+        ))}
+      </div>
     </div>
   );
 };
