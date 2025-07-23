@@ -52,8 +52,8 @@ const Header = () => {
           <Link to={'/about-us'} className="text-white hover:text-primary">
             Giới thiệu
           </Link>
-          <Link to={'/events'} className="text-white hover:text-primary">
-            Sự kiện
+          <Link to={'/services'} className="text-white hover:text-primary">
+            Dịch vụ
           </Link>
           <Link to={'/contact'} className="text-white hover:text-primary">
             Liên hệ
@@ -62,7 +62,10 @@ const Header = () => {
 
         {/* Buttons */}
         <div className="flex space-x-4 items-center">
-          <Button className="bg-primary px-4 py-2 rounded hover:bg-secondary">
+          <Button
+            onClick={() => navigate('/bookings')}
+            className="bg-primary-foreground text-primary px-4 py-2 rounded hover:bg-primary hover:text-primary-foreground"
+          >
             Tạo sự kiện
           </Button>
 
@@ -70,7 +73,7 @@ const Header = () => {
             <Button
               onClick={() => navigate('/login')}
               color="primary"
-              className="bg-primary px-4 py-2 rounded hover:bg-secondary"
+              className="bg-primary text-secondary px-4 py-2 rounded hover:bg-secondary hover:text-primary"
             >
               Đăng nhập
             </Button>

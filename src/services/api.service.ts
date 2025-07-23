@@ -2,6 +2,21 @@ import authService from './authService';
 
 type RequestHeaders = Record<string, string>;
 
+export type ApiResponse<T> = {
+  data: T;
+  message: string;
+  meta?: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+  status: string;
+  statusCode: number;
+};
+
 class ApiService {
   baseUrl: string;
   authService: typeof authService;
@@ -15,7 +30,7 @@ class ApiService {
     endpoint: string,
     method: string = 'GET',
     body: unknown = null,
-    headers: RequestHeaders = {}
+    headers: RequestHeaders = {},
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const accessToken = this.authService.getAccessToken();
@@ -59,7 +74,7 @@ class ApiService {
   post<T = unknown>(
     endpoint: string,
     body: unknown,
-    headers: RequestHeaders = {}
+    headers: RequestHeaders = {},
   ) {
     return this.request<T>(endpoint, 'POST', body, headers);
   }
@@ -67,7 +82,7 @@ class ApiService {
   put<T = unknown>(
     endpoint: string,
     body: unknown,
-    headers: RequestHeaders = {}
+    headers: RequestHeaders = {},
   ) {
     return this.request<T>(endpoint, 'PUT', body, headers);
   }

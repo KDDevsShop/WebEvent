@@ -8,6 +8,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import RegisterPage from '@/pages/client/RegisterPage';
 import BookingPage from '@/pages/client/BookingPage';
 import EventDetailPage from '@/pages/client/EventDetailPage';
+import ServiceListPage from '@/pages/client/ServiceListPage';
+import ServiceDetailPage from '@/pages/client/ServiceDetailPage';
 
 const Router = () => {
   return (
@@ -28,10 +30,19 @@ const Router = () => {
         />
 
         <Route
-          path="/events"
+          path="/services"
           element={
             <CustomerLayout>
-              <EventListPage />
+              <ServiceListPage />
+            </CustomerLayout>
+          }
+        />
+
+        <Route
+          path="/services/:id"
+          element={
+            <CustomerLayout>
+              <ServiceDetailPage />
             </CustomerLayout>
           }
         />
