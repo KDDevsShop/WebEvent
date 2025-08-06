@@ -211,7 +211,7 @@ const EventTypeList = () => {
         {/* Content Section */}
         {loading ? (
           <LoadingSkeleton />
-        ) : eventTypes.length === 0 ? (
+        ) : eventTypes?.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
               <svg
@@ -238,13 +238,14 @@ const EventTypeList = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
-              {eventTypes.map((category, index) => (
-                <EventTypeItem
-                  key={category.type_id}
-                  category={category}
-                  index={index}
-                />
-              ))}
+              {eventTypes?.length !== 0 &&
+                eventTypes?.map((category, index) => (
+                  <EventTypeItem
+                    key={category.type_id}
+                    category={category}
+                    index={index}
+                  />
+                ))}
             </div>
           </>
         )}

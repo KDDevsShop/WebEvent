@@ -1,88 +1,7 @@
-import EventCard from '../common/EventCard';
-
-type Event = {
-  event_id: number;
-  event_name: string;
-  description: string;
-  event_date: Date;
-  start_time: Date;
-  end_time: Date;
-  estimated_cost: number;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELED';
-  event_type: {
-    name: string;
-  };
-};
-
-const mockEvents: Event[] = [
-  {
-    event_id: 1,
-    event_name: 'Summer Wedding Celebration',
-    description: 'A beautiful summer wedding with garden reception',
-    event_date: new Date('2024-07-15'),
-    start_time: new Date('2024-07-15T14:00:00'),
-    end_time: new Date('2024-07-15T22:00:00'),
-    estimated_cost: 5000.0,
-    status: 'PENDING',
-    event_type: { name: 'Wedding' },
-  },
-  {
-    event_id: 2,
-    event_name: 'Corporate Annual Meeting',
-    description: 'Annual company meeting and networking event',
-    event_date: new Date('2024-06-20'),
-    start_time: new Date('2024-06-20T09:00:00'),
-    end_time: new Date('2024-06-20T17:00:00'),
-    estimated_cost: 3500.0,
-    status: 'CONFIRMED',
-    event_type: { name: 'Corporate' },
-  },
-  {
-    event_id: 3,
-    event_name: 'Birthday Gala',
-    description: 'Luxurious birthday celebration',
-    event_date: new Date('2024-08-10'),
-    start_time: new Date('2024-08-10T18:00:00'),
-    end_time: new Date('2024-08-10T23:00:00'),
-    estimated_cost: 2500.0,
-    status: 'PENDING',
-    event_type: { name: 'Birthday' },
-  },
-  {
-    event_id: 4,
-    event_name: 'Tech Conference 2024',
-    description: 'Annual technology conference with industry leaders',
-    event_date: new Date('2024-09-05'),
-    start_time: new Date('2024-09-05T08:00:00'),
-    end_time: new Date('2024-09-05T18:00:00'),
-    estimated_cost: 4200.0,
-    status: 'CONFIRMED',
-    event_type: { name: 'Conference' },
-  },
-  {
-    event_id: 5,
-    event_name: 'Charity Fundraising Dinner',
-    description: 'Elegant dinner event to raise funds for local charities',
-    event_date: new Date('2024-10-12'),
-    start_time: new Date('2024-10-12T19:00:00'),
-    end_time: new Date('2024-10-12T23:30:00'),
-    estimated_cost: 3800.0,
-    status: 'CONFIRMED',
-    event_type: { name: 'Charity' },
-  },
-  {
-    event_id: 6,
-    event_name: 'Music Festival Weekend',
-    description:
-      'Three-day outdoor music festival featuring local and international artists',
-    event_date: new Date('2024-08-25'),
-    start_time: new Date('2024-08-25T12:00:00'),
-    end_time: new Date('2024-08-27T23:00:00'),
-    estimated_cost: 7500.0,
-    status: 'PENDING',
-    event_type: { name: 'Festival' },
-  },
-];
+import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import serviceService, { type Service } from '@/services/serviceService';
+import ServiceCardList from '../ServicePage/ServiceCardList';
 
 const FloatingElements = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -134,6 +53,35 @@ const FloatingElements = () => (
 );
 
 export default function PopularEvents() {
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = React.useState(false);
+  const [services, setServices] = React.useState<Service[]>([]);
+
+  const fetchServices = async () => {
+    setLoading(true);
+    try {
+      const response = await serviceService.getAllServices();
+      console.log(response);
+      setServices(response.data.services || []);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const handleSelectService = React.useCallback(
+    (service: Service) => {
+      navigate(`/services/${service.service_id}`);
+    },
+    [navigate],
+  );
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
       {/* Enhanced floating background elements */}
@@ -180,12 +128,12 @@ export default function PopularEvents() {
 
           {/* Enhanced title with primary gradient */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 bg-gradient-to-r from-slate-800 via-blue-600 to-indigo-700 bg-clip-text text-transparent leading-tight tracking-tight">
-            Sự kiện nổi bật
+            Dịch vụ nổi bật
           </h1>
 
           {/* Enhanced subtitle */}
           <p className="text-xl md:text-2xl lg:text-3xl text-slate-600 max-w-4xl mx-auto leading-relaxed mb-10 font-light">
-            Khám phá những sự kiện đặc biệt và trải nghiệm không thể bỏ lỡ trong
+            Khám phá những dịch vụ đặc biệt và trải nghiệm không thể bỏ lỡ trong
             thời gian tới
           </p>
 
@@ -215,7 +163,7 @@ indigo-600 to-purple-600 rounded-full animate-ping opacity-20"
           <div className="flex flex-wrap justify-center gap-8 mb-12">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border border-blue-100">
               <div className="text-2xl font-bold text-blue-600">1,000+</div>
-              <div className="text-sm text-slate-600">Sự kiện</div>
+              <div className="text-sm text-slate-600">Dịch vụ</div>
             </div>
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border border-indigo-100">
               <div className="text-2xl font-bold text-indigo-600">50K+</div>
@@ -244,7 +192,7 @@ indigo-600 to-purple-600 rounded-full animate-ping opacity-20"
             <div className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-blue-100">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
               <span className="text-lg font-semibold text-slate-700">
-                Sự kiện được yêu thích nhất
+                dịch vụ được yêu thích nhất
               </span>
               <div
                 className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"
@@ -253,27 +201,11 @@ indigo-600 to-purple-600 rounded-full animate-ping opacity-20"
             </div>
           </div>
 
-          {/* Events cards with enhanced styling */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
-            {mockEvents.map((event, index) => (
-              <div
-                key={event.event_id}
-                className="group transform transition-all duration-700 hover:scale-105 hover:-translate-y-2"
-                style={{
-                  animationDelay: `${index * 0.15}s`,
-                  animation: 'fadeInUp 0.8s ease-out forwards',
-                }}
-              >
-                <div className="relative">
-                  {/* Glow effect on hover */}
-                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-                  <div className="relative">
-                    <EventCard event={event} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ServiceCardList
+            services={services}
+            loading={loading}
+            onServiceSelect={handleSelectService}
+          />
         </div>
 
         {/* Enhanced Call to Action Section */}
@@ -305,18 +237,21 @@ indigo-600 to-purple-600 rounded-full animate-ping opacity-20"
             </div>
 
             <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent mb-6 text-center">
-              Bạn muốn xem thêm sự kiện?
+              Bạn muốn xem thêm dịch vụ?
             </h3>
 
             <p className="text-xl text-slate-600 mb-10 max-w-3xl mx-auto text-center leading-relaxed">
-              Khám phá hàng trăm sự kiện khác đang chờ đón bạn. Từ hội thảo
+              Khám phá hàng trăm dịch vụ khác đang chờ đón bạn. Từ hội thảo
               chuyên nghiệp đến lễ hội âm nhạc sôi động.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <button className="group relative px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden min-w-[200px]">
-                <span className="relative z-10 flex items-center justify-center gap-3">
-                  Xem tất cả sự kiện
+                <Link
+                  to={'/services'}
+                  className="relative z-10 flex items-center justify-center gap-3"
+                >
+                  Xem tất cả dịch vụ
                   <svg
                     className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200"
                     fill="none"
@@ -330,7 +265,7 @@ indigo-600 to-purple-600 rounded-full animate-ping opacity-20"
                       d="M17 8l4 4m0 0l-4 4m4-4H3"
                     />
                   </svg>
-                </span>
+                </Link>
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
 
@@ -362,7 +297,7 @@ indigo-600 to-purple-600 rounded-full animate-ping opacity-20"
                   Thời gian thực
                 </h4>
                 <p className="text-sm text-slate-600">
-                  Cập nhật sự kiện liên tục
+                  Cập nhật dịch vụ liên tục
                 </p>
               </div>
               <div className="text-center p-4">
@@ -385,7 +320,7 @@ indigo-600 to-purple-600 rounded-full animate-ping opacity-20"
                   Đã xác minh
                 </h4>
                 <p className="text-sm text-slate-600">
-                  Sự kiện được kiểm duyệt
+                  Dịch vụ được kiểm duyệt
                 </p>
               </div>
               <div className="text-center p-4">
@@ -405,7 +340,7 @@ indigo-600 to-purple-600 rounded-full animate-ping opacity-20"
                   </svg>
                 </div>
                 <h4 className="font-semibold text-slate-800 mb-1">Yêu thích</h4>
-                <p className="text-sm text-slate-600">Lưu sự kiện quan tâm</p>
+                <p className="text-sm text-slate-600">Lưu dịch vụ quan tâm</p>
               </div>
             </div>
           </div>

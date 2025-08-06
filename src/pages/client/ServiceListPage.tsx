@@ -20,6 +20,7 @@ const breadcrumbItems = [
 
 const ServiceListPage = () => {
   const navigate = useNavigate();
+  const ref = React.useRef<HTMLDivElement>(null);
 
   const [loading, setLoading] = React.useState(false);
   const [services, setServices] = React.useState<Service[]>([]);
@@ -38,6 +39,10 @@ const ServiceListPage = () => {
   };
 
   React.useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
     fetchServices();
   }, []);
 
@@ -49,7 +54,7 @@ const ServiceListPage = () => {
   );
 
   return (
-    <div className="px-16 py-4">
+    <div ref={ref} className="px-16 py-4">
       <Breadcrumb>
         <BreadcrumbList>
           {breadcrumbItems.map((item, index) => (

@@ -15,7 +15,7 @@ type ApiResponse<T> = {
   statusCode: number;
 };
 
-interface EventType {
+export interface EventType {
   type_id: number;
   type_name: string;
   description: string;
