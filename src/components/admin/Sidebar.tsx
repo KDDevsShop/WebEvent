@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -6,39 +6,39 @@ import {
   Package,
   LogOut,
   ListOrderedIcon,
-} from "lucide-react";
+} from 'lucide-react';
 //import authService from '../services/auth.service';
 
 const navItems = [
   {
-    label: "Dashboard",
+    label: 'Dashboard',
     icon: <LayoutDashboard size={18} />,
-    path: "/dashboard",
+    path: '/dashboard',
   },
   {
-    label: "Quản lý phòng",
+    label: 'Quản lý phòng',
     icon: <HousePlusIcon size={18} />,
-    path: "/admin/rooms",
+    path: '/admin/rooms',
   },
   {
-    label: "Quản lý chuyên khoa",
+    label: 'Quản lý loại sự kiện',
     icon: <Package size={18} />,
-    path: "/admin/specialties",
+    path: '/admin/event-types',
   },
   {
-    label: "Quản lý  FAQs",
+    label: 'Quản lý loại dịch vụ',
     icon: <Package size={18} />,
-    path: "/admin/faqs",
+    path: '/admin/service-types',
   },
   {
-    label: "Quản lý bệnh nhân",
+    label: 'Quản lý bệnh nhân',
     icon: <Users size={18} />,
-    path: "/admin/patients",
+    path: '/admin/patients',
   },
   {
-    label: "Quản lý lịch khám",
+    label: 'Quản lý lịch khám',
     icon: <ListOrderedIcon size={18} />,
-    path: "/admin/bookings",
+    path: '/admin/bookings',
   },
 ];
 
@@ -66,8 +66,8 @@ const Sidebar = () => {
             to={item.path}
             className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium ${
               location.pathname === item.path
-                ? "bg-indigo-100 text-indigo-600"
-                : "text-gray-600 hover:bg-gray-50"
+                ? 'bg-indigo-100 text-indigo-600'
+                : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
             {item.icon}
