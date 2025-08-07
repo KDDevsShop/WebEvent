@@ -25,6 +25,13 @@ const ServiceListPage = () => {
   const [loading, setLoading] = React.useState(false);
   const [services, setServices] = React.useState<Service[]>([]);
 
+  const handleSelectService = React.useCallback(
+    (service: Service) => {
+      navigate(`/services/${service.service_id}`);
+    },
+    [navigate],
+  );
+
   const fetchServices = async () => {
     setLoading(true);
     try {
@@ -45,13 +52,6 @@ const ServiceListPage = () => {
 
     fetchServices();
   }, []);
-
-  const handleSelectService = React.useCallback(
-    (service: Service) => {
-      navigate(`/services/${service.service_id}`);
-    },
-    [navigate],
-  );
 
   return (
     <div ref={ref} className="px-16 py-4">
