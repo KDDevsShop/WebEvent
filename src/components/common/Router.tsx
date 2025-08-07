@@ -3,6 +3,7 @@ import CustomerLayout from '@/layouts/CustomerLayout';
 import EventListPage from '@/pages/client/EventListPage';
 import HomePage from '@/pages/client/HomePage';
 import RoomListAdmin from '@/pages/admin/RoomListAdmin';
+import EventTypeListAdmin from '@/pages/admin/EventTypeListAdmin';
 import LoginPage from '@/pages/client/LoginPage';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import RegisterPage from '@/pages/client/RegisterPage';
@@ -10,6 +11,7 @@ import BookingPage from '@/pages/client/BookingPage';
 import EventDetailPage from '@/pages/client/EventDetailPage';
 import ServiceListPage from '@/pages/client/ServiceListPage';
 import ServiceDetailPage from '@/pages/client/ServiceDetailPage';
+import ServiceTypeListAdmin from '@/pages/admin/ServiceTypeListAdmin';
 
 const Router = () => {
   return (
@@ -94,13 +96,22 @@ const Router = () => {
             </AdminLayout>
           }
         />
-
         <Route
-          path="/admin/rooms"
+          path="/admin/event-types"
           element={
             <AdminLayout>
-              {/* RoomListAdmin will show the list of rooms */}
-              <RoomListAdmin />
+              {/* EventTypeListAdmin will show the list of event types */}
+              <EventTypeListAdmin />
+            </AdminLayout>
+          }
+        />
+
+        <Route
+          path="/admin/service-types"
+          element={
+            <AdminLayout>
+              {/* EventTypeListAdmin will show the list of event types */}
+              <ServiceTypeListAdmin />
             </AdminLayout>
           }
         />

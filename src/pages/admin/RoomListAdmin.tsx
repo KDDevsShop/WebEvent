@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Datatable from '../../components/common/Datatable';
 import roomService from '../../services/roomService';
+import CreateRoom from './components/CreateRoom';
+import UpdateRoom from './components/UpdateRoom';
+import RoomDetail from './components/RoomDetail';
 
-interface Room {
+export interface Room {
   room_id: number;
   room_name: string;
   guest_capacity?: number;
@@ -24,9 +27,8 @@ const RoomListAdmin = () => {
   const [modalType, setModalType] = useState<'view' | 'edit' | 'create' | null>(
     null,
   );
-  const [formData, setFormData] = useState<Partial<Room>>({});
-  const [formImages, setFormImages] = useState<File[]>([]);
-  const [formLoading, setFormLoading] = useState(false);
+  const [deleteConfirmRoom, setDeleteConfirmRoom] = useState<Room | null>(null);
+  // Form state moved to subcomponents
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const fetchRooms = async (
@@ -68,30 +70,25 @@ const RoomListAdmin = () => {
 
   const handleEdit = (room: Room) => {
     setSelectedRoom(room);
-    setFormData({ ...room });
-    setFormImages([]);
     setModalType('edit');
   };
 
   const handleCreate = () => {
     setSelectedRoom(null);
-    setFormData({
-      room_name: '',
-      guest_capacity: 0,
-      base_price: 0,
-      status: 'AVAILABLE',
-      is_active: true,
-    });
-    setFormImages([]);
     setModalType('create');
   };
 
-  const handleDelete = async (room: Room) => {
-    if (!window.confirm(`Xác nhận xoá phòng "${room.room_name}"?`)) return;
+  const handleDelete = (room: Room) => {
+    setDeleteConfirmRoom(room);
+  };
+
+  const confirmDeleteRoom = async () => {
+    if (!deleteConfirmRoom) return;
     setDeleteLoading(true);
     try {
-      await roomService.deleteRoom(room.room_id.toString());
+      await roomService.deleteRoom(deleteConfirmRoom.room_id.toString());
       fetchRooms();
+      setDeleteConfirmRoom(null);
     } catch {
       alert('Xoá phòng thất bại');
     } finally {
@@ -99,63 +96,16 @@ const RoomListAdmin = () => {
     }
   };
 
+  const cancelDeleteRoom = () => {
+    setDeleteConfirmRoom(null);
+  };
+
   const closeModal = () => {
     setSelectedRoom(null);
     setModalType(null);
-    setFormData({});
-    setFormImages([]);
   };
 
-  const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    const type = (e.target as HTMLInputElement).type;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData((prev: Partial<Room>) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFormImages(Array.from(e.target.files));
-    }
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormLoading(true);
-    try {
-      const form = new FormData();
-      // Exclude fields that should not be sent to backend
-      const excludeKeys = ['room_id', 'created_at', 'updated_at', 'images'];
-      const entries = Object.entries(formData).filter(
-        ([key]) => !excludeKeys.includes(key),
-      );
-      entries.forEach(([key, value]) => {
-        if (value !== undefined && value !== null)
-          form.append(key, String(value));
-      });
-      if (formImages.length > 0) {
-        // Only support single image for now (backend: upload.single("image"))
-        form.append('image', formImages[0]);
-      }
-      if (modalType === 'edit' && selectedRoom) {
-        await roomService.api.request(`/${selectedRoom.room_id}`, 'PUT', form);
-      } else if (modalType === 'create') {
-        await roomService.api.request('/', 'POST', form);
-      }
-      fetchRooms();
-      closeModal();
-    } catch (err) {
-      alert('Lưu phòng thất bại');
-      console.log(err);
-    } finally {
-      setFormLoading(false);
-    }
-  };
+  // Form logic moved to CreateRoom and UpdateRoom components
 
   return (
     <div className="p-6 bg-muted-foreground rounded-2xl">
@@ -231,14 +181,36 @@ const RoomListAdmin = () => {
       </div>
 
       {/* Modal for view/edit/create */}
-      {(modalType === 'view' ||
-        modalType === 'edit' ||
-        modalType === 'create') && (
+      {modalType === 'view' && selectedRoom && (
+        <RoomDetail room={selectedRoom} onClose={closeModal} />
+      )}
+      {modalType === 'edit' && selectedRoom && (
+        <UpdateRoom
+          room={selectedRoom}
+          onClose={closeModal}
+          onSuccess={() => {
+            fetchRooms();
+            closeModal();
+          }}
+        />
+      )}
+      {modalType === 'create' && (
+        <CreateRoom
+          onClose={closeModal}
+          onSuccess={() => {
+            fetchRooms();
+            closeModal();
+          }}
+        />
+      )}
+
+      {/* Delete confirmation modal */}
+      {deleteConfirmRoom && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative animate-fade-in border border-gray-200">
             <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
+              onClick={cancelDeleteRoom}
               title="Đóng"
             >
               <svg
@@ -256,136 +228,35 @@ const RoomListAdmin = () => {
                 />
               </svg>
             </button>
-            {modalType === 'view' && selectedRoom && (
-              <div>
-                <h2
-                  className="text-lg font-bold mb-2"
-                  style={{ color: 'var(--primary)' }}
-                >
-                  Thông tin phòng
-                </h2>
-                <div className="space-y-2">
-                  <div>
-                    <span className="font-semibold">ID:</span>{' '}
-                    {selectedRoom.room_id}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Tên phòng:</span>{' '}
-                    {selectedRoom.room_name}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Sức chứa:</span>{' '}
-                    {selectedRoom.guest_capacity}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Giá cơ bản:</span>{' '}
-                    {selectedRoom.base_price}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Trạng thái:</span>{' '}
-                    {selectedRoom.status}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Hoạt động:</span>{' '}
-                    {selectedRoom.is_active ? '✔️' : '❌'}
-                  </div>
-                  {/* TODO: Show images if available */}
-                </div>
-              </div>
-            )}
-            {(modalType === 'edit' || modalType === 'create') && (
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <h2
-                  className="text-lg font-bold mb-2"
-                  style={{ color: 'var(--primary)' }}
-                >
-                  {modalType === 'edit' ? 'Cập nhật phòng' : 'Thêm phòng mới'}
-                </h2>
-                <div>
-                  <label className="block font-semibold mb-1">Tên phòng</label>
-                  <input
-                    type="text"
-                    name="room_name"
-                    value={formData.room_name || ''}
-                    onChange={handleFormChange}
-                    className="w-full border rounded px-3 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold mb-1">Sức chứa</label>
-                  <input
-                    type="number"
-                    name="guest_capacity"
-                    value={formData.guest_capacity || ''}
-                    onChange={handleFormChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold mb-1">Giá cơ bản</label>
-                  <input
-                    type="number"
-                    name="base_price"
-                    value={formData.base_price || ''}
-                    onChange={handleFormChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold mb-1">Trạng thái</label>
-                  <select
-                    name="status"
-                    value={formData.status || 'AVAILABLE'}
-                    onChange={handleFormChange}
-                    className="w-full border rounded px-3 py-2"
-                  >
-                    <option value="AVAILABLE">AVAILABLE</option>
-                    <option value="UNAVAILABLE">UNAVAILABLE</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-semibold mb-1">Hoạt động</label>
-                  <input
-                    type="checkbox"
-                    name="is_active"
-                    checked={!!formData.is_active}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold mb-1">Ảnh phòng</label>
-                  <input
-                    type="file"
-                    name="image"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                  />
-                  {formImages.length > 0 && (
-                    <div className="mt-2 text-sm text-gray-500">
-                      {formImages[0].name}
-                    </div>
-                  )}
-                </div>
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
-                    onClick={closeModal}
-                    disabled={formLoading}
-                  >
-                    Huỷ
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700"
-                    disabled={formLoading}
-                  >
-                    {formLoading ? 'Đang lưu...' : 'Lưu'}
-                  </button>
-                </div>
-              </form>
-            )}
+            <h2
+              className="text-xl font-bold mb-4 text-center text-primary"
+              style={{ color: 'var(--primary)' }}
+            >
+              Xác nhận xoá phòng
+            </h2>
+            <div className="mb-6 text-center text-lg">
+              Bạn có chắc chắn muốn xoá phòng{' '}
+              <span className="font-semibold text-red-600">
+                "{deleteConfirmRoom.room_name}"
+              </span>
+              ?
+            </div>
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                onClick={cancelDeleteRoom}
+                disabled={deleteLoading}
+              >
+                Huỷ
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 font-bold shadow"
+                onClick={confirmDeleteRoom}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Đang xoá...' : 'Xoá phòng'}
+              </button>
+            </div>
           </div>
         </div>
       )}
