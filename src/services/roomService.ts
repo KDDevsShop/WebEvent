@@ -126,6 +126,14 @@ class RoomService {
   async getRoomById(id: string): Promise<ApiResponseSingle<Room>> {
     return this.api.request<ApiResponseSingle<Room>>(`/${id}`, 'GET');
   }
+
+  async updateRoom(id: string, data: any): Promise<any> {
+    return this.api.request(`/${id}`, 'PUT', data);
+  }
+
+  async deleteRoom(id: string): Promise<any> {
+    return this.api.request(`/${id}`, 'DELETE');
+  }
 }
 
 export default new RoomService();
