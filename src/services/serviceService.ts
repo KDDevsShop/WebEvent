@@ -1,5 +1,10 @@
 import ApiService from './api.service';
 
+interface ServiceImage {
+  image_url: string;
+  alt_text?: string;
+}
+
 export interface Service {
   service_id: number;
   service_name: string;
@@ -9,6 +14,7 @@ export interface Service {
   is_active: boolean;
   updated_at: string;
   service_type_id: number;
+  images?: ServiceImage[];
 }
 
 export type Filters = {
@@ -48,18 +54,42 @@ class ServiceService {
     this.api = new ApiService('http://localhost:5000/api/services');
   }
 
-  async createService(data: Omit<Service, 'type_id'>): Promise<Service> {
-    return this.api.request<Service>('/', 'POST', data, {
-      'Content-Type': 'application/json',
-    });
+  async createService(data: any): Promise<any> {
+    let headers = {};
+    if (!(data instanceof FormData)) {
+      headers = { 'Content-Type': 'application/json' };
+    }
+    return this.api.request('/', 'POST', data, headers);
   }
 
-  async getAllServices(): Promise<ApiResponseList<Service>> {
-    return this.api.request('/', 'GET');
+  async getAllServices(
+    params?: Record<string, any>,
+  ): Promise<ApiResponseList<Service>> {
+    let query = '';
+    if (params) {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          searchParams.append(key, value.toString());
+        }
+      });
+      query = `?${searchParams.toString()}`;
+    }
+    return this.api.request(`/${query}`, 'GET');
   }
 
   async getServiceById(id: string): Promise<ApiResponseSingle<Service>> {
     return this.api.request<ApiResponseSingle<Service>>(`/${id}`, 'GET');
+  }
+
+  async deleteService(id: string): Promise<any> {
+    return this.api.request(`/${id}`, 'DELETE');
+  }
+
+  async updateService(id: number, data: any): Promise<any> {
+    // If data is NOT FormData, send JSON content-type
+
+    return this.api.request(`/${id}`, 'PUT', data);
   }
 }
 

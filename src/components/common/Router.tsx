@@ -12,6 +12,8 @@ import EventDetailPage from '@/pages/client/EventDetailPage';
 import ServiceListPage from '@/pages/client/ServiceListPage';
 import ServiceDetailPage from '@/pages/client/ServiceDetailPage';
 import ServiceTypeListAdmin from '@/pages/admin/ServiceTypeListAdmin';
+import ServiceListAdmin from '@/pages/admin/ServiceListAdmin';
+import DashboardPage from '@/pages/admin/DashboardPage';
 
 const Router = () => {
   return (
@@ -96,6 +98,16 @@ const Router = () => {
             </AdminLayout>
           }
         />
+
+        <Route
+          path="/admin/services"
+          element={
+            <AdminLayout>
+              {/* RoomListAdmin will show the list of rooms */}
+              <ServiceListAdmin />
+            </AdminLayout>
+          }
+        />
         <Route
           path="/admin/event-types"
           element={
@@ -112,6 +124,16 @@ const Router = () => {
             <AdminLayout>
               {/* EventTypeListAdmin will show the list of event types */}
               <ServiceTypeListAdmin />
+            </AdminLayout>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <AdminLayout>
+              {/* EventTypeListAdmin will show the list of event types */}
+              <DashboardPage />
             </AdminLayout>
           }
         />

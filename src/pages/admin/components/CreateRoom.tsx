@@ -31,14 +31,12 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onClose, onSuccess }) => {
     }));
   };
 
-  // Handle multiple image selection and preview
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      setFormImages(files);
-      // Generate previews
+      setFormImages((prev) => [...prev, ...files]);
       const previews = files.map((file) => URL.createObjectURL(file));
-      setImagePreviews(previews);
+      setImagePreviews((prev) => [...prev, ...previews]);
     }
   };
 
@@ -62,8 +60,9 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onClose, onSuccess }) => {
       });
       // Append all images
       if (formImages.length > 0) {
-        formImages.forEach((img) => form.append('image', img));
+        formImages.forEach((img) => form.append('image', img)); // matches upload.array("image")
       }
+
       await roomService.api.request('/', 'POST', form);
       onSuccess();
     } catch (err) {

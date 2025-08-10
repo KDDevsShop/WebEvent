@@ -30,15 +30,11 @@ const navItems = [
     icon: <Package size={18} />,
     path: '/admin/service-types',
   },
+
   {
-    label: 'Quản lý bệnh nhân',
-    icon: <Users size={18} />,
-    path: '/admin/patients',
-  },
-  {
-    label: 'Quản lý lịch khám',
+    label: 'Quản lý dịch vụ',
     icon: <ListOrderedIcon size={18} />,
-    path: '/admin/bookings',
+    path: '/admin/services',
   },
 ];
 

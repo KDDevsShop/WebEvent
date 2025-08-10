@@ -13,6 +13,7 @@ export interface Room {
   status?: string;
   is_active?: boolean;
   [key: string]: unknown;
+  images?: { id: number; url: string }[];
 }
 
 const RoomListAdmin = () => {
