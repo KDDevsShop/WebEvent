@@ -117,15 +117,6 @@ const Router = () => {
         {/* Admin routes */}
 
         <Route
-          path="/admin"
-          element={
-            <AdminLayout>
-              <HomePage />
-            </AdminLayout>
-          }
-        />
-
-        <Route
           path="/admin/rooms"
           element={
             <AdminLayout>
@@ -165,7 +156,7 @@ const Router = () => {
         />
 
         <Route
-          path="/dashboard"
+          path="/admin/dashboard"
           element={
             <AdminLayout>
               {/* EventTypeListAdmin will show the list of event types */}
