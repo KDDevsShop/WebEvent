@@ -18,18 +18,25 @@ const BookingPage = () => {
   return (
     <div className="px-16 py-4">
       <Breadcrumb>
-        <BreadcrumbList>
+        <BreadcrumbList className="flex items-center">
           {breadcrumbItems.map((item, index) => (
-            <BreadcrumbItem key={index}>
-              {item.href === '/bookings' ? (
-                <BreadcrumbPage>
+            <div
+              key={`breadcrumb-item-${index}`}
+              className="flex items-center gap-2"
+            >
+              <BreadcrumbItem>
+                {item.href === '/bookings' ? (
+                  <BreadcrumbPage>
+                    <BreadcrumbLink href={item.href}>
+                      {item.label}
+                    </BreadcrumbLink>
+                  </BreadcrumbPage>
+                ) : (
                   <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
-                </BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
-              )}
+                )}
+              </BreadcrumbItem>
               {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
-            </BreadcrumbItem>
+            </div>
           ))}
         </BreadcrumbList>
       </Breadcrumb>

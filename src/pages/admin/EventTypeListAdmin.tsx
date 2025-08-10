@@ -5,6 +5,8 @@ import type { EventType } from '@/services/eventType.service';
 import CreateEventType from '../admin/components/CreateEventType';
 import UpdateEventType from '../admin/components/UpdateEventType';
 import EventTypeDetail from '../admin/components/EventTypeDetail';
+import type { ApiResponse } from '@/services/api.service';
+import { toast } from 'react-toastify';
 
 const EventTypeListAdmin = () => {
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
@@ -26,7 +28,7 @@ const EventTypeListAdmin = () => {
     setError('');
     try {
       // Pass search param to API if present
-      let res;
+      let res: ApiResponse<EventType[]>;
       if (params.search && params.search.trim()) {
         res = await eventTypeService.api.request(
           `/?search=${encodeURIComponent(params.search.trim())}`,
@@ -38,6 +40,7 @@ const EventTypeListAdmin = () => {
       setEventTypes(res.data || []);
     } catch (err) {
       setError('Lỗi tải danh sách loại sự kiện');
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -74,6 +77,7 @@ const EventTypeListAdmin = () => {
   const confirmDeleteEventType = async () => {
     if (!deleteConfirmEventType) return;
     setDeleteLoading(true);
+    setError('');
     try {
       await eventTypeService.api.request(
         `/${deleteConfirmEventType.type_id}`,
@@ -83,6 +87,7 @@ const EventTypeListAdmin = () => {
       setDeleteConfirmEventType(null);
     } catch (err) {
       alert('Xóa loại sự kiện thất bại');
+      console.log(err);
     } finally {
       setDeleteLoading(false);
     }
@@ -105,6 +110,7 @@ const EventTypeListAdmin = () => {
 
   return (
     <div className="p-6">
+      {error && toast.error(error)}
       <div className="flex justify-between items-center mb-4">
         <form onSubmit={handleSearch} className="flex gap-2">
           <input

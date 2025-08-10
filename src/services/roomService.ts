@@ -3,16 +3,16 @@ import ApiService from './api.service';
 export interface Room {
   room_id: number;
   room_name: string;
-  status: 'AVAILABLE' | 'BOOKED' | 'MAINTENANCE' | 'OCCUPIED' | 'RESERVED';
-  guest_capacity: number;
-  base_price: string;
-  hourly_rate: string | null;
-  description: string | null;
-  amenities: string[] | null;
+  status?: 'AVAILABLE' | 'BOOKED' | 'MAINTENANCE' | 'OCCUPIED' | 'RESERVED';
+  guest_capacity?: number;
+  base_price?: string;
+  hourly_rate?: string | null;
+  description?: string | null;
+  amenities?: string[] | null;
   is_active: boolean;
-  images: RoomImage[];
-  created_at: string;
-  updated_at: string;
+  images?: RoomImage[];
+  created_at?: string;
+  updated_at?: string;
 }
 
 type RoomImage = {

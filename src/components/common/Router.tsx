@@ -12,6 +12,11 @@ import EventDetailPage from '@/pages/client/EventDetailPage';
 import ServiceListPage from '@/pages/client/ServiceListPage';
 import ServiceDetailPage from '@/pages/client/ServiceDetailPage';
 import ServiceTypeListAdmin from '@/pages/admin/ServiceTypeListAdmin';
+import ProfilePage from '@/pages/client/ProfilePage';
+import BookingHistoryTab from '../client/ProfilePage/BookingHistoryTab';
+import ChangePasswordTab from '../client/ProfilePage/ChangePasswordTab';
+import PersonalInfoTab from '../client/ProfilePage/PersonalInfoTab';
+import PaymentStatusPage from '@/pages/client/PaymentStatusPage';
 
 const Router = () => {
   return (
@@ -30,6 +35,28 @@ const Router = () => {
             </CustomerLayout>
           }
         />
+
+        <Route
+          path="/profile"
+          element={
+            <CustomerLayout>
+              <ProfilePage />
+            </CustomerLayout>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <CustomerLayout>
+              <ProfilePage />
+            </CustomerLayout>
+          }
+        >
+          <Route path="me" element={<PersonalInfoTab />} />
+          <Route path="booking-history" element={<BookingHistoryTab />} />
+          <Route path="change-password" element={<ChangePasswordTab />} />
+        </Route>
 
         <Route
           path="/services"
@@ -72,6 +99,15 @@ const Router = () => {
           element={
             <CustomerLayout>
               <BookingPage />
+            </CustomerLayout>
+          }
+        />
+
+        <Route
+          path="/payment/stripe-pay-callback"
+          element={
+            <CustomerLayout>
+              <PaymentStatusPage />
             </CustomerLayout>
           }
         />

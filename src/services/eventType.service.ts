@@ -18,7 +18,8 @@ type ApiResponse<T> = {
 export interface EventType {
   type_id: number;
   type_name: string;
-  description: string;
+  description?: string;
+  is_active?: boolean;
 }
 
 class EventTypeService {

@@ -13,7 +13,7 @@ const navItems = [
   {
     label: 'Dashboard',
     icon: <LayoutDashboard size={18} />,
-    path: '/dashboard',
+    path: '/admin/dashboard',
   },
   {
     label: 'Quản lý phòng',

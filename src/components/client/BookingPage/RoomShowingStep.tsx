@@ -1,19 +1,14 @@
+import React from 'react';
 import type { GetAllRoomQueries, Room } from '@/services/roomService';
 import roomService from '@/services/roomService';
-import React from 'react';
 import RoomCardList from '../RoomPage/RoomCardList';
 import useStepForm from '@/hooks/useStepForm';
 
-type RoomShowingStepProps = {
-  props?: React.ReactNode;
-};
-
-const RoomShowingStep: React.FC<RoomShowingStepProps> = ({ props }) => {
+const RoomShowingStep = () => {
   const [rooms, setRooms] = React.useState<Room[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const { updateField } = useStepForm();
-
-  console.log(props);
 
   const onChooseRoom = (room: Room) => {
     console.log('Selected room:', room);
@@ -22,6 +17,7 @@ const RoomShowingStep: React.FC<RoomShowingStepProps> = ({ props }) => {
   };
 
   const fetchRooms = React.useCallback(async () => {
+    setLoading(true);
     try {
       const roomQueries: GetAllRoomQueries = {
         includeImages: true,
@@ -31,7 +27,10 @@ const RoomShowingStep: React.FC<RoomShowingStepProps> = ({ props }) => {
 
       setRooms(response.data);
     } catch (error) {
+      setLoading(false);
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -44,11 +43,17 @@ const RoomShowingStep: React.FC<RoomShowingStepProps> = ({ props }) => {
       <h1 className="text-3xl text-primary font-bold mb-8">
         Chọn một phòng cho buổi tiệc
       </h1>
-      <RoomCardList
-        rooms={rooms}
-        onRoomSelect={(room) => console.log(room)}
-        onChoose={onChooseRoom}
-      />
+      {loading ? (
+        <div className="flex justify-center items-center">
+          <h1 className="text-2xl text-primary">Loading...</h1>
+        </div>
+      ) : (
+        <RoomCardList
+          rooms={rooms}
+          onRoomSelect={(room) => console.log(room)}
+          onChoose={onChooseRoom}
+        />
+      )}
     </div>
   );
 };

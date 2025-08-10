@@ -11,7 +11,9 @@ export interface StepFormData {
   account_id: string;
   room_id: string;
   event_type_id: string;
-  event_services: string[];
+  selected_services?: number[];
+  variation_id?: number[];
+  service_variants?: { service_id: number; variant_id: number }[];
 }
 
 interface StepFormContextType {
@@ -41,7 +43,8 @@ export const StepFormProvider: React.FC<{ children: ReactNode }> = ({
     account_id: '0',
     room_id: '0',
     event_type_id: '0',
-    event_services: [],
+    selected_services: [],
+    variation_id: [],
   };
 
   const [data, setData] = useState<StepFormData>(initialData);

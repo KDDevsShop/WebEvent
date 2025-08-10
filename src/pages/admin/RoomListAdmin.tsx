@@ -44,7 +44,7 @@ const RoomListAdmin = () => {
         limit: pageSize,
       });
       console.log(res.data);
-      setRooms((res.data as Room[]) || []);
+      setRooms(res.data || []);
       setTotalPages(res.pagination?.totalPages || 1);
     } catch {
       setError('Failed to fetch rooms');

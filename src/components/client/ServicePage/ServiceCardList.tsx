@@ -20,24 +20,26 @@ interface Service {
 
 interface ServiceCardProps {
   service: Service;
+  onViewDetail?: (service: Service) => void;
   onSelect?: (service: Service) => void;
-  onChoose?: (service: Service) => void;
   chosen?: boolean;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
+  onViewDetail,
   onSelect,
-  onChoose,
   chosen,
 }) => {
   const handleCardClick = () => {
-    if (onChoose) {
-      onChoose(service);
-    } else if (onSelect) {
+    if (onSelect) {
       onSelect(service);
+    } else if (onViewDetail) {
+      onViewDetail(service);
     }
   };
+
+  const isSelectableCard = React.useMemo(() => Boolean(onSelect), [onSelect]);
 
   const imageUrl =
     service.images?.[0]?.image_url ||
@@ -48,7 +50,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-200 relative"
       onClick={handleCardClick}
     >
-      {onChoose && (
+      {isSelectableCard && (
         <div
           className={`absolute top-3 right-3 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
             chosen
@@ -116,10 +118,19 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             } px-4 py-1 rounded-lg font-medium transition-colors duration-200`}
             onClick={(e) => {
               e.stopPropagation();
-              onChoose?.(service);
+
+              if (isSelectableCard) {
+                onSelect?.(service);
+              } else {
+                onViewDetail?.(service);
+              }
             }}
           >
-            {chosen ? 'Selected' : 'Select'}
+            {isSelectableCard
+              ? chosen
+                ? 'Selected'
+                : 'Select'
+              : 'Xem chi tiết'}
           </button>
         </div>
       </div>
@@ -130,16 +141,16 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 interface ServiceCardListProps {
   services?: Service[];
   loading?: boolean;
-  onServiceSelect?: (service: Service) => void;
-  onChoose?: (service: Service[]) => void;
+  onViewDetail?: (service: Service) => void;
+  onSelect?: (service: Service[]) => void;
   className?: string;
 }
 
 const ServiceCardList: React.FC<ServiceCardListProps> = ({
   services = [],
   loading = false,
-  onServiceSelect,
-  onChoose,
+  onViewDetail,
+  onSelect,
   className = '',
 }) => {
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
@@ -152,13 +163,13 @@ const ServiceCardList: React.FC<ServiceCardListProps> = ({
     setFilteredServices(activeServices);
   }, [services]);
 
-  const handleChoose = (service: Service) => {
+  const handleSelect = (service: Service) => {
     setChosenServices((prev) => {
       const exists = prev.some((s) => s.service_id === service.service_id);
       const updated = exists
         ? prev.filter((s) => s.service_id !== service.service_id)
         : [...prev, service];
-      onChoose?.(updated);
+      onSelect?.(updated);
       return updated;
     });
   };
@@ -224,8 +235,8 @@ const ServiceCardList: React.FC<ServiceCardListProps> = ({
         <ServiceCard
           key={service.service_id}
           service={service}
-          onSelect={onServiceSelect}
-          onChoose={handleChoose}
+          onViewDetail={onViewDetail}
+          onSelect={onSelect ? () => handleSelect(service) : undefined}
           chosen={chosenServices.some(
             (s) => s.service_id === service.service_id,
           )}

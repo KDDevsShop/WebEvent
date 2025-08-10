@@ -67,7 +67,6 @@ const GeneralInformationStep = () => {
       endDateTime instanceof Date ? endDateTime.toISOString() : endDateTime,
     );
     updateField('event_date', data.event_date);
-    // Handle form submission logic here
     toast.success('Thông tin sự kiện đã được cập nhật thành công!');
   };
 

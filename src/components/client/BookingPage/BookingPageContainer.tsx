@@ -1,4 +1,4 @@
-// import React from 'react';
+import React from 'react';
 import { defineStepper } from '@stepperize/react';
 import GeneralInformationStep from './GeneralInformationStep';
 import RoomShowingStep from './RoomShowingStep';
@@ -8,8 +8,19 @@ import ServiceShowingStep from './ServiceShowingStep';
 import type { StepFormData } from '@/context/StepFormContext';
 import useStepForm from '@/hooks/useStepForm';
 import eventService from '@/services/eventService';
+import type { Event } from '@/services/eventService';
 import { toast } from 'react-toastify';
 import PaymentStep from './PaymentStep';
+import VariantShowingStep from './VariantShowingStep';
+import type {
+  ServiceVariant,
+  ServiceVariantQuery,
+} from '@/services/eventVariantService';
+import eventVariantService from '@/services/eventVariantService';
+import ReviewStep from './ReviewStep';
+import paymentService, {
+  type PaymentCreationBody,
+} from '@/services/paymentService';
 
 // type BookingPageContainerProps = {
 //   props?: React.ReactNode;
@@ -32,11 +43,16 @@ const { useStepper, utils, steps } = defineStepper(
     description:
       'Chọn dịch vụ kèm theo cho sự kiện (có thể chọn nhiều dịch vụ)',
   },
-  // {
-  //   id: 'review',
-  //   title: 'Xác nhận thông tin',
-  //   description: 'Xác nhận thông tin sự kiện',
-  // },
+  {
+    id: 'variant-selection',
+    title: 'Lựa chọn gói dịch vụ',
+    description: 'Chọn gói dịch vụ kèm theo cho sự kiện',
+  },
+  {
+    id: 'review',
+    title: 'Xem lại thông tin',
+    description: 'Xem lại thông tin sự kiện',
+  },
   {
     id: 'payment',
     title: 'Thanh toán',
@@ -50,12 +66,44 @@ const account_id = account !== null ? JSON.parse(account).account_id : 1;
 export const BookingPageContainer = () => {
   const stepper = useStepper();
 
-  const { data, resetForm } = useStepForm();
+  const { data, updateField, resetForm } = useStepForm();
+  const [variants, setVariants] = React.useState<ServiceVariant[]>([]);
+
+  const [selectedVariants, setSelectedVariants] = React.useState<number[]>([]);
+
+  const [event, setEvent] = React.useState<Event | null>(null);
+  const [eventLoading, setEventLoading] = React.useState<boolean>(false);
 
   const currentIndex = utils.getIndex(stepper.current.id);
 
+  const handleFetchEvent = async (eventId: string | number) => {
+    setEventLoading(true);
+    try {
+      const response = await eventService.getEventById(eventId.toString());
+
+      console.log(response);
+
+      if (response.statusCode !== 200) {
+        throw new Error(response.message || 'Internal Server Error');
+      }
+
+      toast.success(
+        'Sự kiện đã tạo thành công. Vui lòng kiểm tra lại thông tin và xác nhận sự kiện',
+      );
+
+      setEvent(response.data);
+    } catch (error) {
+      console.error('Error fetching event:', error);
+      toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+      resetForm();
+      stepper.reset();
+    } finally {
+      setEventLoading(false);
+    }
+  };
+
   const handleCreateEvent = async () => {
-    const payload: StepFormData = {
+    const rawData: StepFormData = {
       event_name: data.event_name,
       description: data.description,
       start_time: data.start_time,
@@ -64,14 +112,37 @@ export const BookingPageContainer = () => {
       account_id: account_id,
       room_id: data.room_id,
       event_type_id: data.event_type_id,
-      event_services: data.event_services,
+    };
+
+    const payload: StepFormData = {
+      ...rawData,
+      service_variants: data.selected_services
+        ?.map((serviceId, index) => {
+          const variantId = data.variation_id?.[index];
+          if (typeof variantId === 'number') {
+            return {
+              service_id: serviceId,
+              variant_id: variantId,
+            };
+          }
+          return null;
+        })
+        .filter(
+          (item): item is { service_id: number; variant_id: number } =>
+            item !== null,
+        ),
     };
 
     try {
-      console.log(payload);
       const response = await eventService.createEvent(payload);
 
-      console.log(response);
+      if (response.statusCode !== 201) {
+        throw new Error(response.message || 'Internal Server Error');
+      }
+
+      console.log('event creation response: \n', response);
+
+      handleFetchEvent(response.data.event_id);
     } catch (error) {
       console.log(error);
       toast.error(
@@ -80,10 +151,73 @@ export const BookingPageContainer = () => {
     }
   };
 
+  const handleConfirmEvent = async () => {
+    try {
+      const payload: PaymentCreationBody = {
+        event_id: event?.event_id.toString() || '',
+        userId: account_id,
+      };
+
+      const response = await paymentService.createPaymentSession(payload);
+
+      console.log(response);
+
+      if (response.statusCode !== 200) {
+        throw new Error(response.message || 'Internal Server Error');
+      }
+
+      const paymentUrl = response.data.stripeSession.url;
+
+      window.open(paymentUrl, '_blank');
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error instanceof Error ? error.message : 'Internal server error',
+      );
+    }
+  };
+
+  const handleFetchVariants = async () => {
+    const baseQuery: ServiceVariantQuery = {
+      includePricingTiers: 'true',
+      includeService: 'true',
+    };
+
+    const query: ServiceVariantQuery = {
+      ...baseQuery,
+    };
+
+    data.selected_services?.forEach(async (serviceId) => {
+      query.service_id = serviceId.toString();
+
+      const variantsResponse = await eventVariantService.getAllServiceVariants(
+        query,
+      );
+
+      setVariants(variantsResponse.data.variations);
+    });
+  };
+
+  const handleSelectVariant = (variantId: number) => {
+    console.log('Selected variant:', variantId);
+    setSelectedVariants((prev) => [...prev, variantId]);
+    updateField('variation_id', [...selectedVariants, variantId]);
+  };
+
+  const handleDeselectVariant = (variantId: number) => {
+    console.log('Deselected variant:', variantId);
+    setSelectedVariants((prev) => prev.filter((id) => id !== variantId));
+  };
+
+  const handleNextStep = () => {
+    stepper.when('service-selection', handleFetchVariants);
+    stepper.when('variant-selection', handleCreateEvent);
+    stepper.next();
+  };
+
   const handleReset = () => {
-    stepper.reset();
     resetForm();
-    console.log('Form has been reset', data);
+    stepper.reset();
   };
 
   return (
@@ -118,7 +252,22 @@ export const BookingPageContainer = () => {
           'general-information': () => <GeneralInformationStep />,
           'room-selection': () => <RoomShowingStep />,
           'service-selection': () => <ServiceShowingStep />,
-          // 'review': () => <ReviewStep />,
+          'variant-selection': () => (
+            <VariantShowingStep
+              variants={variants}
+              selectedVariants={selectedVariants}
+              onVariantSelect={handleSelectVariant}
+              onVariantDeselect={handleDeselectVariant}
+            />
+          ),
+          review: () => (
+            <ReviewStep
+              eventData={event}
+              loading={eventLoading}
+              onReset={handleReset}
+              onConfirm={handleConfirmEvent}
+            />
+          ),
           payment: () => <PaymentStep />,
         })}
         {!stepper.isLast ? (
@@ -130,7 +279,7 @@ export const BookingPageContainer = () => {
             >
               Quay lại
             </Button>
-            <Button onClick={stepper.next}>Tiếp tục</Button>
+            <Button onClick={handleNextStep}>Tiếp tục</Button>
           </div>
         ) : (
           <div className="flex justify-end gap-4">

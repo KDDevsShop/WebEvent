@@ -25,7 +25,7 @@ const ServiceListPage = () => {
   const [loading, setLoading] = React.useState(false);
   const [services, setServices] = React.useState<Service[]>([]);
 
-  const handleSelectService = React.useCallback(
+  const handleViewDetail = React.useCallback(
     (service: Service) => {
       navigate(`/services/${service.service_id}`);
     },
@@ -75,7 +75,8 @@ const ServiceListPage = () => {
         <ServiceCardList
           services={services}
           loading={loading}
-          onServiceSelect={handleSelectService}
+          onViewDetail={handleViewDetail}
+          // onSelect={handleSelectService}
         />
       </div>
     </div>

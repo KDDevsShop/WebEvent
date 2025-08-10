@@ -1,38 +1,41 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import authService from "@/services/authService";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import authService from '@/services/authService';
+import { toast } from 'react-toastify';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/accounts/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('http://localhost:5000/api/accounts/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (!res.ok || !data?.data?.token) {
-        setError(data?.message || "Đăng nhập thất bại");
+        setError(data?.message || 'Đăng nhập thất bại');
         setLoading(false);
         return;
       }
       // Save token
       authService.setAccessToken(data.data.token);
       // Optionally save user info
-      localStorage.setItem("user", JSON.stringify(data.data));
-      navigate("/admin");
+      localStorage.setItem('user', JSON.stringify(data.data));
+      navigate('/admin/dashboard');
     } catch (err) {
-      setError("Lỗi kết nối máy chủ");
+      console.log(err);
+      toast.error('Lỗi kết nối máy chủ');
+      setError('Lỗi kết nối máy chủ');
     } finally {
       setLoading(false);
     }
@@ -159,7 +162,7 @@ const LoginPage = () => {
                     </svg>
                   </div>
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     className="w-full pl-10 pr-12 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 text-foreground placeholder-muted-foreground"
                     placeholder="Nhập mật khẩu"
                     value={password}
@@ -273,9 +276,9 @@ const LoginPage = () => {
             {/* Footer */}
             <div className="mt-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Chưa có tài khoản?{" "}
+                Chưa có tài khoản?{' '}
                 <button
-                  onClick={() => navigate("/register")}
+                  onClick={() => navigate('/register')}
                   className="text-primary hover:text-primary/80 font-medium transition-colors duration-200"
                 >
                   Đăng ký ngay

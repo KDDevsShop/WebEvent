@@ -4,6 +4,7 @@ import serviceTypeService from '@/services/serviceTypeService';
 import CreateServiceType from '../admin/components/CreateServiceType';
 import UpdateServiceType from '../admin/components/UpdateServiceType';
 import ServiceTypeDetail from '../admin/components/ServiceTypeDetail';
+import { toast } from 'react-toastify';
 
 export interface ServiceType {
   service_type_id: number;
@@ -44,14 +45,19 @@ const ServiceTypeListAdmin = () => {
       });
       setServiceTypes(res.data?.serviceTypes || []);
       setTotalPages(res.data?.pagination?.totalPages || 1);
-    } catch (err: any) {
+    } catch (err) {
       setError('Lỗi tải danh sách loại dịch vụ');
+      console.log(err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    if (error) {
+      toast.error(error);
+      setError('');
+    }
     fetchServiceTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
@@ -91,6 +97,7 @@ const ServiceTypeListAdmin = () => {
       fetchServiceTypes();
       setDeleteConfirmServiceType(null);
     } catch (err) {
+      console.log(err);
       alert('Xóa loại dịch vụ thất bại');
     } finally {
       setDeleteLoading(false);
@@ -114,7 +121,7 @@ const ServiceTypeListAdmin = () => {
     {
       Header: 'Hoạt động',
       accessor: 'is_active',
-      Cell: ({ value }: any) => (value ? '✔️' : '❌'),
+      Cell: ({ value }: { value: boolean }) => (value ? '✔️' : '❌'),
     },
   ];
 

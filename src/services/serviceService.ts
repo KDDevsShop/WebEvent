@@ -1,14 +1,15 @@
 import ApiService from './api.service';
 
 export interface Service {
-  service_id: number;
+  service_id: number | string;
   service_name: string;
-  description: string;
-  setup_time: number;
-  is_available: boolean;
-  is_active: boolean;
-  updated_at: string;
-  service_type_id: number;
+  description?: string;
+  setup_time?: number;
+  is_available?: boolean;
+  is_active?: boolean;
+  updated_at?: string;
+  service_type_id?: number | string;
+  variationCount?: number | string;
 }
 
 export type Filters = {
