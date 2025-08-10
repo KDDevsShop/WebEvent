@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
+interface ServiceImage {
+  image_id: number;
+  image_url: string;
+  alt_text: string | null;
+}
+
 interface Service {
   service_id: number;
   service_name: string;
@@ -9,28 +15,61 @@ interface Service {
   is_active: boolean;
   updated_at: string;
   service_type_id: number;
+  images?: ServiceImage[];
 }
 
 interface ServiceCardProps {
   service: Service;
   onSelect?: (service: Service) => void;
+  onChoose?: (service: Service) => void;
+  chosen?: boolean;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({
+  service,
+  onSelect,
+  onChoose,
+  chosen,
+}) => {
   const handleCardClick = () => {
-    if (onSelect) {
+    if (onChoose) {
+      onChoose(service);
+    } else if (onSelect) {
       onSelect(service);
     }
   };
 
+  const imageUrl =
+    service.images?.[0]?.image_url ||
+    'https://www.pngkey.com/png/full/233-2332677_generic-placeholder-image-conference-room-free-icon.png';
+
   return (
     <div
-      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-200"
+      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-200 relative"
       onClick={handleCardClick}
     >
+      {onChoose && (
+        <div
+          className={`absolute top-3 right-3 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
+            chosen
+              ? 'bg-blue-600 border-blue-600 text-white'
+              : 'bg-white border-gray-300 text-gray-400'
+          }`}
+        >
+          {chosen ? '✓' : ''}
+        </div>
+      )}
+
+      <img
+        src={imageUrl}
+        alt={service.service_name}
+        className="w-full h-48 object-cover rounded-t-lg"
+        loading="lazy"
+      />
+
       <div className="p-6">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-xl font-semibold text-gray-800 line-clamp-2">
+        <div className="flex justify-start items-start gap-4 mb-3">
+          <h3 className="text-xl font-semibold text-gray-800 line-clamp-1">
             {service.service_name}
           </h3>
           <div className="flex gap-2 ml-4">
@@ -47,7 +86,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) => {
           </div>
         </div>
 
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
           {service.description}
         </p>
 
@@ -66,17 +105,21 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) => {
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>Setup: {service.setup_time} min</span>
+            <span>Setup: {service.setup_time} phút</span>
           </div>
 
           <button
-            className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
+            className={`${
+              chosen
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+            } px-4 py-1 rounded-lg font-medium transition-colors duration-200`}
             onClick={(e) => {
               e.stopPropagation();
-              handleCardClick();
+              onChoose?.(service);
             }}
           >
-            View Details →
+            {chosen ? 'Selected' : 'Select'}
           </button>
         </div>
       </div>
@@ -88,6 +131,7 @@ interface ServiceCardListProps {
   services?: Service[];
   loading?: boolean;
   onServiceSelect?: (service: Service) => void;
+  onChoose?: (service: Service[]) => void;
   className?: string;
 }
 
@@ -95,17 +139,29 @@ const ServiceCardList: React.FC<ServiceCardListProps> = ({
   services = [],
   loading = false,
   onServiceSelect,
+  onChoose,
   className = '',
 }) => {
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+  const [chosenServices, setChosenServices] = useState<Service[]>([]);
 
   useEffect(() => {
-    // Filter to show only active and available services for customers
     const activeServices = services.filter(
       (service) => service.is_active && service.is_available,
     );
     setFilteredServices(activeServices);
   }, [services]);
+
+  const handleChoose = (service: Service) => {
+    setChosenServices((prev) => {
+      const exists = prev.some((s) => s.service_id === service.service_id);
+      const updated = exists
+        ? prev.filter((s) => s.service_id !== service.service_id)
+        : [...prev, service];
+      onChoose?.(updated);
+      return updated;
+    });
+  };
 
   if (loading) {
     return (
@@ -169,6 +225,10 @@ const ServiceCardList: React.FC<ServiceCardListProps> = ({
           key={service.service_id}
           service={service}
           onSelect={onServiceSelect}
+          onChoose={handleChoose}
+          chosen={chosenServices.some(
+            (s) => s.service_id === service.service_id,
+          )}
         />
       ))}
     </div>

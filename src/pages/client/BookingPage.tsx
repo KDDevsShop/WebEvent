@@ -7,6 +7,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { StepFormProvider } from '@/context/StepFormContext';
 
 const breadcrumbItems = [
   { label: 'Trang chủ', href: '/' },
@@ -33,7 +34,9 @@ const BookingPage = () => {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <BookingPageContainer />
+      <StepFormProvider>
+        <BookingPageContainer />
+      </StepFormProvider>
     </div>
   );
 };

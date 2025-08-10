@@ -47,6 +47,34 @@ export type ApiResponseList<T> = {
   statusCode: number;
 };
 
+export type GetAllServiceQueries = {
+  isActive?: boolean;
+  isAvailable?: boolean;
+  serviceTypeId?: number | null;
+  includeInactive?: boolean;
+  search?: string;
+  searchFields?: string[];
+  createdFrom?: Date | null;
+  createdTo?: Date | null;
+  updatedFrom?: Date | null;
+  updatedTo?: Date | null;
+  minRating?: number | null;
+  maxRating?: number | null;
+  hasReviews?: boolean | null;
+  minSetupTime?: number | null;
+  maxSetupTime?: number | null;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  page?: number | null;
+  limit?: number | null;
+  sortBy?: string | null;
+  sortOrder?: 'asc' | 'desc' | null;
+  includeStats?: boolean | null;
+  includeReviews?: boolean | null;
+  includeVariations?: boolean | null;
+  includeImages?: boolean | null;
+};
+
 class ServiceService {
   api: ApiService;
 
@@ -63,19 +91,131 @@ class ServiceService {
   }
 
   async getAllServices(
-    params?: Record<string, any>,
+    queries?: GetAllServiceQueries,
   ): Promise<ApiResponseList<Service>> {
-    let query = '';
-    if (params) {
-      const searchParams = new URLSearchParams();
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          searchParams.append(key, value.toString());
-        }
-      });
-      query = `?${searchParams.toString()}`;
+    const params: Record<string, string> = {};
+
+    if (queries?.isActive !== undefined && queries.isActive !== null) {
+      params.isActive = String(queries.isActive);
     }
-    return this.api.request(`/${query}`, 'GET');
+
+    if (queries?.isAvailable !== undefined && queries.isAvailable !== null) {
+      params.isAvailable = String(queries.isAvailable);
+    }
+
+    if (
+      queries?.serviceTypeId !== undefined &&
+      queries.serviceTypeId !== null
+    ) {
+      params.serviceTypeId = String(queries.serviceTypeId);
+    }
+
+    if (
+      queries?.includeInactive !== undefined &&
+      queries.includeInactive !== null
+    ) {
+      params.includeInactive = String(queries.includeInactive);
+    }
+
+    if (queries?.search) {
+      params.search = queries.search;
+    }
+
+    if (queries?.searchFields) {
+      params.searchFields = queries.searchFields.join(',');
+    }
+
+    if (queries?.createdFrom) {
+      params.createdFrom = queries.createdFrom.toISOString();
+    }
+
+    if (queries?.createdTo) {
+      params.createdTo = queries.createdTo.toISOString();
+    }
+
+    if (queries?.updatedFrom) {
+      params.updatedFrom = queries.updatedFrom.toISOString();
+    }
+
+    if (queries?.updatedTo) {
+      params.updatedTo = queries.updatedTo.toISOString();
+    }
+
+    if (queries?.minRating !== undefined && queries.minRating !== null) {
+      params.minRating = String(queries.minRating);
+    }
+
+    if (queries?.maxRating !== undefined && queries.maxRating !== null) {
+      params.maxRating = String(queries.maxRating);
+    }
+
+    if (queries?.hasReviews !== undefined && queries.hasReviews !== null) {
+      params.hasReviews = String(queries.hasReviews);
+    }
+
+    if (queries?.minSetupTime !== undefined && queries.minSetupTime !== null) {
+      params.minSetupTime = String(queries.minSetupTime);
+    }
+
+    if (queries?.maxSetupTime !== undefined && queries.maxSetupTime !== null) {
+      params.maxSetupTime = String(queries.maxSetupTime);
+    }
+
+    if (queries?.minPrice !== undefined && queries.minPrice !== null) {
+      params.minPrice = String(queries.minPrice);
+    }
+
+    if (queries?.maxPrice !== undefined && queries.maxPrice !== null) {
+      params.maxPrice = String(queries.maxPrice);
+    }
+
+    if (queries?.page !== undefined && queries.page !== null) {
+      params.page = String(queries.page);
+    }
+
+    if (queries?.limit !== undefined && queries.limit !== null) {
+      params.limit = String(queries.limit);
+    }
+
+    if (queries?.sortBy) {
+      params.sortBy = queries.sortBy;
+    }
+
+    if (queries?.sortOrder) {
+      params.sortOrder = queries.sortOrder;
+    }
+
+    if (queries?.includeStats !== undefined && queries.includeStats !== null) {
+      params.includeStats = String(queries.includeStats);
+    }
+
+    if (
+      queries?.includeReviews !== undefined &&
+      queries.includeReviews !== null
+    ) {
+      params.includeReviews = String(queries.includeReviews);
+    }
+
+    if (
+      queries?.includeVariations !== undefined &&
+      queries.includeVariations !== null
+    ) {
+      params.includeVariations = String(queries.includeVariations);
+    }
+
+    if (
+      queries?.includeImages !== undefined &&
+      queries.includeImages !== null
+    ) {
+      params.includeImages = String(queries.includeImages);
+    }
+
+    const queryString = new URLSearchParams(params);
+
+    return this.api.request<ApiResponseList<Service>>(
+      `?${queryString.toString()}`,
+      'GET',
+    );
   }
 
   async getServiceById(id: string): Promise<ApiResponseSingle<Service>> {

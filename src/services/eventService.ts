@@ -1,3 +1,4 @@
+import type { StepFormData } from '@/context/StepFormContext';
 import ApiService from './api.service';
 
 type ApiResponse<T> = {
@@ -41,7 +42,7 @@ class EventService {
     this.api = new ApiService('http://localhost:5000/api/events');
   }
 
-  async createEvent(data: Omit<Event, 'type_id'>): Promise<Event> {
+  async createEvent(data: StepFormData): Promise<Event> {
     return this.api.request<Event>('/', 'POST', data, {
       'Content-Type': 'application/json',
     });
